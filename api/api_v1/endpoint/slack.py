@@ -8,6 +8,10 @@ from starlette import status
 from app.handler.listeners import register_listeners
 from config import STR_LOGGER_NAME, SLACK_BOT_TOKEN, SLACK_SIGNING_SECRET
 
+"""
+    Used in local environment to debug
+"""
+
 PREFIX_SLACK = '/slack'
 logger = logging.getLogger(STR_LOGGER_NAME)
 router = APIRouter(prefix=PREFIX_SLACK)

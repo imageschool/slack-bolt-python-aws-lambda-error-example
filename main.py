@@ -47,6 +47,7 @@ def read_root():
 
 
 if os.getenv('ENVIRONMENT') == 'local':
+    # Uvicorn running for easy debugging purpose in local env
     uvicorn.run(app=app, host='0.0.0.0', port=8080)
 else:
     logger.info('Setting Bolt-Python AWS Lambda handler')
@@ -56,6 +57,7 @@ else:
     register_listeners(app=slack_app)
 
 
+# AWS Lambda handler
 def handler(event, context):
     app_handler = SlackRequestHandler(app=slack_app)
     return app_handler.handle(event, context)

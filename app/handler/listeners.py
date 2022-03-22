@@ -19,8 +19,7 @@ def respond_to_slack_within_3_seconds(body, ack):
 
 
 def register_listeners(app: App):
-    # Messages
-    app.message("status")(message_status)
+    # Messages (Now lazy method works)
     app.message("magic")(
         ack=respond_to_slack_within_3_seconds,
         lazy=[message_magic]
