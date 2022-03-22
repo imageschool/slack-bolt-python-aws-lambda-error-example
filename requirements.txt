@@ -9,3 +9,4 @@ slack_bolt == 1.13.0
 starlette == 0.17.1
 uvicorn == 0.17.6
 aiohttp == 3.8.1
+boto3 == 1.21.23

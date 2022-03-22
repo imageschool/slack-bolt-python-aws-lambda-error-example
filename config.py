@@ -35,8 +35,10 @@ class LogConfig(BaseModel):
     }
 
 
-# dotenv
-load_dotenv()
+if os.getenv('ENVIRONMENT') == 'local':
+    load_dotenv('.env.local')
+else:
+    load_dotenv()
 
 # Slack
 SLACK_BOT_TOKEN = os.getenv('SLACK_BOT_TOKEN')

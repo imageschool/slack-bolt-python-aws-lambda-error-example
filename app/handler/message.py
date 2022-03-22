@@ -5,7 +5,7 @@ import time
 from datetime import datetime
 
 import requests
-from slack_bolt.context.say.async_say import AsyncSay
+from slack_bolt import Say
 
 from config import STR_LOGGER_NAME
 
@@ -21,7 +21,7 @@ def get_requests():
     return f"some_result {random_time}"
 
 
-async def message_magic(message: dict, say: AsyncSay):
+def message_magic(message: dict, say: Say):
     logger.debug('message MAGIC magic')
 
     try:
@@ -30,7 +30,10 @@ async def message_magic(message: dict, say: AsyncSay):
         logger.info("Responses arrived")
 
         dt = datetime.today().strftime("%H:%M:%S, %d/%m/%Y")
-        await say(
+
+        # Above gets executed
+        # Below is not executed
+        say(
             blocks=[
                 {
                     "type": "section",
@@ -68,7 +71,7 @@ async def message_magic(message: dict, say: AsyncSay):
         raise
 
 
-async def message_status(message: dict, say: AsyncSay):
+def message_status(message: dict, say: Say):
     logger.debug('message status')
 
     try:
@@ -77,7 +80,7 @@ async def message_status(message: dict, say: AsyncSay):
         logger.info("Responses arrived")
 
         dt = datetime.today().strftime("%H:%M:%S, %d/%m/%Y")
-        await say(
+        say(
             blocks=[
                 {
                     "type": "section",

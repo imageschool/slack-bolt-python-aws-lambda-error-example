@@ -1,8 +1,8 @@
 import logging
 
 from fastapi import APIRouter, Request
-from slack_bolt.adapter.starlette.async_handler import AsyncSlackRequestHandler
-from slack_bolt.async_app import AsyncApp
+from slack_bolt import App
+from slack_bolt.adapter.fastapi import SlackRequestHandler
 from starlette import status
 
 from app.handler.listeners import register_listeners
@@ -12,12 +12,18 @@ PREFIX_SLACK = '/slack'
 logger = logging.getLogger(STR_LOGGER_NAME)
 router = APIRouter(prefix=PREFIX_SLACK)
 
-app = AsyncApp(token=SLACK_BOT_TOKEN, signing_secret=SLACK_SIGNING_SECRET, process_before_response=True)
+app = App(token=SLACK_BOT_TOKEN, signing_secret=SLACK_SIGNING_SECRET)
 
-app_handler = AsyncSlackRequestHandler(app)
-
-# Registering all listeners for slack-bolt
 register_listeners(app=app)
+
+app_handler = SlackRequestHandler(app=app)
+
+
+@router.get('', status_code=status.HTTP_200_OK)
+def hello_slack():
+    return {
+        'Hello': 'Slack'
+    }
 
 
 @router.post('/events', status_code=status.HTTP_200_OK)
@@ -29,6 +35,7 @@ async def endpoint(req: Request):
     logger.debug('Reached /events')
     logger.debug(f"client={req.client}, method = {req.method}, scope = {req.scope}")
     logger.debug(f"scope = {req.scope}")
+
     return await app_handler.handle(req)
 
 

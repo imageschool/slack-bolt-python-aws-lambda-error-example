@@ -3,12 +3,14 @@ import os
 from logging.config import dictConfig
 
 import uvicorn
-from mangum import Mangum
 from fastapi import FastAPI
+from slack_bolt import App
+from slack_bolt.adapter.aws_lambda import SlackRequestHandler
 from starlette.middleware.cors import CORSMiddleware
 
 from api.api_v1.api import router
-from config import LogConfig, STR_LOGGER_NAME
+from app.handler.listeners import register_listeners
+from config import LogConfig, STR_LOGGER_NAME, SLACK_SIGNING_SECRET, SLACK_BOT_TOKEN
 
 # Logger
 dictConfig(LogConfig().dict())
@@ -45,7 +47,15 @@ def read_root():
 
 
 if os.getenv('ENVIRONMENT') == 'local':
-    uvicorn.run(app, host='0.0.0.0', port=8080)
+    uvicorn.run(app=app, host='0.0.0.0', port=8080)
+else:
+    logger.info('Setting Bolt-Python AWS Lambda handler')
+    slack_app = App(token=SLACK_BOT_TOKEN, signing_secret=SLACK_SIGNING_SECRET, process_before_response=True)
 
-logger.info('Setting Mangum handler')
-handler = Mangum(app=app)
+    # Registering all listeners for slack-bolt
+    register_listeners(app=slack_app)
+
+
+def handler(event, context):
+    app_handler = SlackRequestHandler(app=slack_app)
+    return app_handler.handle(event, context)
